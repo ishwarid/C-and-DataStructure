@@ -1,0 +1,262 @@
+#include<stdio.h>
+#include<conio.h>
+#include<alloc.h>
+#include<process.h>
+#define MAX 10
+
+
+typedef enum boolean{false, true} bool;
+int adj[ MAX ][ MAX ];
+bool visited[ MAX ];
+int n; /* Denotes number of nodes in the graph */
+
+
+void create_graph(void);
+void display(void);
+void dfs_rec( int );
+void dfs( int );
+void bfs( int );
+void adj_nodes( int);
+
+/* main started*/
+void main()
+{
+    clrscr();
+    int i, v, choice;
+
+
+
+    while ( 1 )
+	{   clrscr();
+	    printf("------------GRAPH------------");
+	    printf( "\n" );
+	    printf( "1. Create Graph \n");
+	    printf( "2. Adjacency matrix \n" );
+	    printf( "3. Depth First Search using stack \n" );
+	    printf( "4. Depth First Search through recursion \n" );
+	    printf( "5. Breadth First Search \n" );
+	    printf( "6. Adjacent vertices \n" );
+	    printf( "7. Exit \n" );
+	    printf( "Enter your choice : " );
+	    scanf( "%d", &choice );
+
+	    switch ( choice )
+		{
+
+		case 1:
+		    create_graph();
+		    break;
+		case 2:
+		    printf( "Adjacency Matrix\n" );
+		    display();
+		    break;
+
+		case 3:
+		    printf( "Enter starting node for Depth First Search : " );
+		    scanf( "%d", &v );
+
+		    for ( i = 1;i <= n;i++ )
+			visited[ i ] = false;
+
+		    dfs( v );
+
+		    break;
+
+		case 4:
+		    printf( "Enter starting node for Depth First Search : " );
+
+		    scanf( "%d", &v );
+
+		    for ( i = 1;i <= n;i++ )
+			visited[ i ] = false;
+
+		    dfs_rec( v );
+
+		    break;
+
+		case 5:
+		    printf( "Enter starting node for Breadth First Search : " );
+
+		    scanf( "%d", &v );
+
+		    for ( i = 1;i <= n;i++ )
+			visited[ i ] = false;
+
+		    bfs( v );
+
+		    break;
+
+		case 6:
+		    printf( "Enter node to find adjacent vertices : " );
+
+		    scanf( "%d", &v );
+
+		    printf( "Adjacent Vertices are : " );
+
+		    adj_nodes( v );
+
+		    break;
+
+
+		case 7:
+		    exit( 1 );
+		    break;
+
+		default:
+		    printf( "Wrong choice\n" );
+
+		    break;
+		} /*End of switch*/
+	} /*End of while*/
+getche();
+
+} /*End of main()*/
+
+
+/*create graph*/
+void create_graph()
+{
+
+    int i, max_edges, origin, destin;
+
+    printf( "Enter number of nodes : " );
+    scanf( "%d", &n );
+    max_edges = n * ( n - 1 );
+
+    for ( i = 1;i <= max_edges;i++ )
+	{
+	    printf( "Enter edge %d( 0 0 to quit ) : ", i );
+	    scanf( "%d %d", &origin, &destin );
+
+	    if ( ( origin == 0 ) && ( destin == 0 ) )
+		break;
+
+	    if ( origin > n || destin > n || origin <= 0 || destin <= 0 )
+		{
+		    printf( "Invalid edge!\n" );
+		    i--;
+		}
+	    else
+		{
+		    adj[ origin ][ destin ] = 1;
+		}
+	} /*End of for*/
+getch();
+} /*End of create_graph()*/
+
+
+/*dispalying adjacency materix on consol*/
+void display()
+{
+    int i, j;
+
+    for ( i = 1;i <= n;i++ )
+	{
+	    for ( j = 1;j <= n;j++ )
+		printf( "%4d", adj[ i ][ j ] );
+
+	    printf( "\n" );
+	}
+getch();
+} /*End of display()*/
+
+/*showing adjacency nodes*/
+void adj_nodes( int v )
+{
+    int i;
+
+    for ( i = 1;i <= n;i++ )
+	if ( adj[ v ][ i ] == 1 )
+	    printf( "%d ", i );
+
+    printf( "\n" );
+getch();
+} /*End of adj_nodes()*/
+
+
+/*depth first search using recusion function*/
+void dfs_rec( int v )
+{
+    int i;
+    visited[ v ] = true;
+    printf( "%d ", v );
+
+    for ( i = 1;i <= n;i++ )
+	if ( adj[ v ][ i ] == 1 && visited[ i ] == false )
+	    dfs_rec( i );
+getch();
+} /*End of dfs_rec()*/
+
+
+/*depth first search using stack*/
+void dfs( int v )
+{
+    int i, stack[ MAX ], top = -1, pop_v, j, t;
+    int ch;
+
+    top++;
+    stack[ top ] = v;
+
+    while ( top >= 0 )
+	{
+	    pop_v = stack[ top ];
+	    top--; /*pop from stack*/
+
+	    if ( visited[ pop_v ] == false )
+		{
+		    printf( "%d ", pop_v );
+		    visited[ pop_v ] = true;
+		}
+	    else
+		continue;
+
+	    for ( i = n;i >= 1;i-- )
+		{
+		    if ( adj[ pop_v ][ i ] == 1 && visited[ i ] == false )
+			{
+			    top++; /* push all unvisited neighbours of pop_v */
+			    stack[ top ] = i;
+			} /*End of if*/
+		} /*End of for*/
+	} /*End of while*/
+getch();
+} /*End of dfs()*/
+
+
+/*breadth first search using queue*/
+void bfs( int v )
+{
+    int i, front, rear;
+    int que[ 20 ];
+    front = rear = -1;
+
+    printf( "%d ", v );
+    visited[ v ] = true;
+    rear++;
+    front++;
+    que[ rear ] = v;
+
+    while ( front <= rear )
+	{
+	    v = que[ front ]; /* delete from queue */
+	    front++;
+
+	    for ( i = 1;i <= n;i++ )
+		{
+		    /* Check for adjacent unvisited nodes */
+
+		    if ( adj[ v ][ i ] == 1 && visited[ i ] == false )
+			{
+			    printf( "%d ", i );
+			    visited[ i ] = true;
+			    rear++;
+			    que[ rear ] = i;
+			}
+		}
+	} /*End of while*/
+getch();
+} /*End of bfs()*/
+
+
+
+
